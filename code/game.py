@@ -1,31 +1,38 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import pygame
-from code.menu import Menu
-from code.const import WIN_WIDTH, WIN_HEIGHT
+from importlib.metadata import pass_none
 
+import pygame
+
+from code.level import Level
+from code.menu import Menu
+from code.const import WIN_WIDTH, WIN_HEIGHT, MENU_OPTION
 
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.window = pygame.display.set_mode(size=(WIN_WIDTH, WIN_HEIGHT))
-        pygame.display.set_caption("Meu Jogo")
+        self.window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+        pygame.display.set_caption("Mountain Shooter")
 
     def run(self):
-        # Mostra o menu apenas uma vez no início
-        menu = Menu(self.window)
-        menu.run()
-
-        # Agora vem o loop do jogo
         running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+        clock = pygame.time.Clock()
 
-            self.window.fill((0, 0, 0))
-            # desenhar jogo aqui...
-            pygame.display.flip()
+        while running:
+            # 1. Menu
+            menu = Menu(self.window)
+            menu_return = menu.run()
+
+            if menu_return in MENU_OPTION[:3]:  # novos jogos ou load
+                level = Level(self.window, "Level1", menu_return)
+                level_return = level.run()
+
+            elif menu_return == "QUIT":
+                running = False
+
+            # Limita FPS do loop principal
+            clock.tick(60)
 
         pygame.quit()
+        quit()
